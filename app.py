@@ -4,22 +4,22 @@ from typing import List
 
 app = FastAPI()
 
-# مدل داده برای میوه
+# Data model for a fruit
 class Fruit(BaseModel):
     id: int
     name: str
     price_per_kg: float
     quantity_in_kg: float
 
-# پایگاه داده موقتی (در حافظه)
+# Temporary in-memory database
 inventory = []
 
-# لیست تمام میوه‌ها
+# Get the list of all fruits
 @app.get("/fruits", response_model=List[Fruit])
 def get_all_fruits():
     return inventory
 
-# دریافت اطلاعات یک میوه بر اساس ID
+# Get details of a specific fruit by ID
 @app.get("/fruits/{fruit_id}", response_model=Fruit)
 def get_fruit(fruit_id: int):
     for fruit in inventory:
@@ -27,7 +27,7 @@ def get_fruit(fruit_id: int):
             return fruit
     raise HTTPException(status_code=404, detail="Fruit not found")
 
-# افزودن میوه جدید
+# Add a new fruit to the inventory
 @app.post("/fruits", response_model=Fruit)
 def add_fruit(fruit: Fruit):
     for existing_fruit in inventory:
@@ -36,7 +36,7 @@ def add_fruit(fruit: Fruit):
     inventory.append(fruit)
     return fruit
 
-# به‌روزرسانی اطلاعات یک میوه
+# Update information of an existing fruit
 @app.put("/fruits/{fruit_id}", response_model=Fruit)
 def update_fruit(fruit_id: int, updated_fruit: Fruit):
     for index, fruit in enumerate(inventory):
@@ -45,7 +45,7 @@ def update_fruit(fruit_id: int, updated_fruit: Fruit):
             return updated_fruit
     raise HTTPException(status_code=404, detail="Fruit not found")
 
-# حذف یک میوه از موجودی
+# Delete a fruit from the inventory
 @app.delete("/fruits/{fruit_id}")
 def delete_fruit(fruit_id: int):
     for index, fruit in enumerate(inventory):
@@ -53,4 +53,3 @@ def delete_fruit(fruit_id: int):
             del inventory[index]
             return {"message": "Fruit deleted successfully"}
     raise HTTPException(status_code=404, detail="Fruit not found")
-
